@@ -37,11 +37,14 @@ async def test_get_list_cards(httpx_mock):
 
 @pytest.mark.asyncio
 async def test_get_card(httpx_mock):
+    """get_card returns core fields; new fields default to empty/None when not in API response."""
     httpx_mock.add_response(json=SAMPLE_CARD)
     result = await get_card("c1")
     assert result["id"] == "c1"
     assert result["description"] == "Card description"
     assert result["board_id"] == "board1"
+    assert result["idChecklists"] == []
+    assert result["idMembers"] == []
 
 
 @pytest.mark.asyncio
@@ -76,3 +79,44 @@ async def test_archive_card(httpx_mock):
     httpx_mock.add_response(json=archived)
     result = await archive_card("c1")
     assert result["closed"] is True
+
+
+@pytest.mark.asyncio
+async def test_get_card_sends_checklists_param_to_api(httpx_mock):
+    """get_card requests checklists from the API so the response includes idChecklists."""
+    httpx_mock.add_response(json=SAMPLE_CARD)
+    await get_card("c1")
+    request = httpx_mock.get_request()
+    assert "checklists=all" in str(request.url) or "checklists%3Dall" in str(request.url)
+
+
+@pytest.mark.asyncio
+async def test_get_card_includes_id_checklists_id_members_badges_and_metadata(httpx_mock):
+    """get_card returns idChecklists, idMembers, badges, idAttachmentCover, id_short, short_url, date_last_activity when the API provides them."""
+    full_card = {
+        **SAMPLE_CARD,
+        "idChecklists": ["cl1", "cl2"],
+        "idMembers": ["m1"],
+        "idAttachmentCover": "att1",
+        "idShort": 42,
+        "shortUrl": "https://trello.com/c/abc",
+        "dateLastActivity": "2025-01-15T10:30:00.000Z",
+        "badges": {
+            "comments": 2,
+            "attachments": 1,
+            "checkItemsChecked": 1,
+            "checkItems": 3,
+        },
+    }
+    httpx_mock.add_response(json=full_card)
+    result = await get_card("c1")
+    assert result["idChecklists"] == ["cl1", "cl2"]
+    assert result["idMembers"] == ["m1"]
+    assert result["idAttachmentCover"] == "att1"
+    assert result["id_short"] == 42
+    assert result["short_url"] == "https://trello.com/c/abc"
+    assert result["date_last_activity"] == "2025-01-15T10:30:00.000Z"
+    assert result["badges"]["comments"] == 2
+    assert result["badges"]["attachments"] == 1
+    assert result["badges"]["checkItemsChecked"] == 1
+    assert result["badges"]["checkItems"] == 3

@@ -4,6 +4,7 @@ from trello_mcp.client import TrelloClient
 
 
 def _format_card(c: dict[str, Any]) -> dict[str, Any]:
+    """Format a raw Trello card API response into a consistent output shape."""
     return {
         "id": c["id"],
         "name": c["name"],
@@ -19,6 +20,13 @@ def _format_card(c: dict[str, Any]) -> dict[str, Any]:
             {"id": lb["id"], "name": lb.get("name", ""), "color": lb.get("color", "")}
             for lb in c.get("labels", [])
         ],
+        "idChecklists": c.get("idChecklists", []),
+        "idMembers": c.get("idMembers", []),
+        "idAttachmentCover": c.get("idAttachmentCover"),
+        "id_short": c.get("idShort"),
+        "short_url": c.get("shortUrl"),
+        "date_last_activity": c.get("dateLastActivity"),
+        "badges": c.get("badges"),
     }
 
 
@@ -37,9 +45,9 @@ async def get_board_cards(board_id: str) -> list[dict[str, Any]]:
 
 
 async def get_card(card_id: str) -> dict[str, Any]:
-    """Return details of a single card."""
+    """Return full details of a single card, including checklist IDs, members, badges, and metadata."""
     client = TrelloClient()
-    c = await client.get(f"/cards/{card_id}")
+    c = await client.get(f"/cards/{card_id}", params={"checklists": "all"})
     return _format_card(c)
 
 
