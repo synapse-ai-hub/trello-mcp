@@ -159,6 +159,25 @@ Reiniciá el IDE después de cambiar la configuración.
 
 ---
 
+## Actualización
+
+Si instalaste el MCP en un venv dedicado, para obtener cambios nuevos tenés que **actualizar el paquete** en ese mismo venv y **reiniciar el IDE**.
+
+### Si lo instalaste desde GitHub (`pip install "git+https://..."`)
+
+Activá el venv y ejecutá:
+
+```bash
+python -m pip install --upgrade "git+https://github.com/synapse-ai-hub/trello-mcp.git"
+```
+
+### Si lo instalaste en modo editable (`pip install -e`)
+
+- Si apuntaste a un repo local (ej. `pip install -e "RUTA_AL_REPO"`), primero traé los cambios a ese repo (por ejemplo con `git pull`) y luego reiniciá el IDE.
+- Si querés fijar una versión exacta de GitHub (un commit/branch), reinstalá apuntando a esa referencia.
+
+---
+
 ## Variables de entorno
 
 | Variable | Requerida | Descripción |
