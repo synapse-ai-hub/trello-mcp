@@ -358,6 +358,22 @@ async def add_checklist_item(
         return _error(exc)
 
 
+@mcp.tool()
+async def update_checklist_item(
+    card_id: Annotated[str, "The ID of the card that contains the checklist"],
+    check_item_id: Annotated[str, "The ID of the checklist item to update"],
+    checked: Annotated[bool, "True to mark as done, False to mark as not done"],
+) -> types.CallToolResult:
+    """Mark a checklist item as done (checked) or not done (unchecked)."""
+    try:
+        result = await checklists.update_checklist_item(
+            card_id, check_item_id, checked
+        )
+        return _ok(result)
+    except TrelloError as exc:
+        return _error(exc)
+
+
 # ── Members ──────────────────────────────────────────────────────────────────
 
 

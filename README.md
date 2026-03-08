@@ -64,6 +64,7 @@ Ideal para equipos que usan Trello y quieren integrarlo con el asistente del IDE
 | `get_checklist` | Obtener un checklist y sus ítems |
 | `create_checklist` | Crear un checklist en una tarjeta |
 | `add_checklist_item` | Agregar un ítem a un checklist |
+| `update_checklist_item` | Marcar un ítem del checklist como hecho o no hecho (checked/unchecked) |
 | `get_me` | Perfil del miembro autenticado |
 | `search_trello` | Buscar tarjetas y/o tableros |
 

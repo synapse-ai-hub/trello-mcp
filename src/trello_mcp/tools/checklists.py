@@ -53,3 +53,20 @@ async def add_checklist_item(
         "state": item.get("state", "incomplete"),
         "position": item.get("pos"),
     }
+
+
+async def update_checklist_item(
+    card_id: str, check_item_id: str, checked: bool
+) -> dict[str, Any]:
+    """Mark a checklist item as complete or incomplete (checked/unchecked)."""
+    client = TrelloClient()
+    state = "complete" if checked else "incomplete"
+    item = await client.put(
+        f"/cards/{card_id}/checkItem/{check_item_id}",
+        params={"state": state},
+    )
+    return {
+        "id": item["id"],
+        "name": item.get("name", ""),
+        "state": item.get("state", state),
+    }
